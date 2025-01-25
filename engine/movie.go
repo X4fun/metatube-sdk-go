@@ -53,7 +53,7 @@ func (e *Engine) searchMovie(keyword string, provider mt.MovieProvider, fallback
 			defer func() {
 				if innerResults, innerErr := e.searchMovieFromDB(keyword, provider, false);
 				// ignore DB query error.
-				innerErr == nil && len(innerResults) > 0 {
+					innerErr == nil && len(innerResults) > 0 {
 					// overwrite error.
 					err = nil
 					// update results.
@@ -75,7 +75,7 @@ func (e *Engine) searchMovie(keyword string, provider mt.MovieProvider, fallback
 }
 
 func (e *Engine) SearchMovie(keyword, name string, fallback bool) ([]*model.MovieSearchResult, error) {
-	if keyword = number.Trim(keyword); keyword == "" {
+	if keyword = number.BuildMovieSearchKeyword(keyword); keyword == "" {
 		return nil, mt.ErrInvalidKeyword
 	}
 	provider, err := e.GetMovieProviderByName(name)
@@ -145,7 +145,7 @@ func (e *Engine) searchMovieAll(keyword string) (results []*model.MovieSearchRes
 
 // SearchMovieAll searches the keyword from all providers.
 func (e *Engine) SearchMovieAll(keyword string, fallback bool) (results []*model.MovieSearchResult, err error) {
-	if keyword = number.Trim(keyword); keyword == "" {
+	if keyword = number.BuildMovieSearchKeyword(keyword); keyword == "" {
 		return nil, mt.ErrInvalidKeyword
 	}
 
@@ -183,7 +183,7 @@ func (e *Engine) SearchMovieAll(keyword string, fallback bool) (results []*model
 		defer func() {
 			if innerResults, innerErr := e.searchMovieFromDB(keyword, nil, true);
 			// ignore DB query error.
-			innerErr == nil && len(innerResults) > 0 {
+				innerErr == nil && len(innerResults) > 0 {
 				// overwrite error.
 				err = nil
 				// append results.
@@ -199,9 +199,9 @@ func (e *Engine) SearchMovieAll(keyword string, fallback bool) (results []*model
 func (e *Engine) getMovieInfoFromDB(provider mt.MovieProvider, id string) (*model.MovieInfo, error) {
 	info := &model.MovieInfo{}
 	err := e.db. // Exact match here.
-			Where("provider = ?", provider.Name()).
-			Where("id = ? COLLATE NOCASE", id).
-			First(info).Error
+		Where("provider = ?", provider.Name()).
+		Where("id = ? COLLATE NOCASE", id).
+		First(info).Error
 	return info, err
 }
 
